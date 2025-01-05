@@ -3,6 +3,12 @@ import regex
 import requests
 from bs4 import BeautifulSoup, Comment
 import os
+import pandas
+
+import nltk
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+from nltk.tokenize import word_tokenize
 
 from VideoGame import VideoGame
 
@@ -88,7 +94,7 @@ def remove_tags(html):
 
 def tes4():
     # s = open('videogames\\24.html', "r")
-    s = open('videogames\\fifa-soccer-2005.html', "r")
+    s = open('videogames\\hackgu.html', "r")
     # print(s.read())
     a = "videogames\\24.html"
     # r = requests.get(a)
@@ -96,6 +102,12 @@ def tes4():
     soup = BeautifulSoup(s.read(), 'html5lib')
     # print(soup)
 
+    # Get game title for bigram
+    raw_title = soup.find_all("title")
+    game_title = regex.sub(r"GameSpy: ", "", raw_title[0].get_text())
+    print(game_title)
+
+    # Find
     # Remove css and js from scraped html
     for data in soup(['style', 'script']):
         data.decompose()
@@ -107,6 +119,42 @@ def tes4():
     simplified_data = regex.sub(pattern, " ", refined_data)
     print(simplified_data)
 
+    bigrams = []
+    bigrams.append(game_title)
+
+    # remove punctuation and lowercase
+    removed_punctation = regex.sub(r"[^\w\s]", "", simplified_data)
+    removed_punctation = removed_punctation.lower()
+    # print(removed_punctation)
+
+
+    # Get stopwords
+    nltk.download('stopwords')
+    stopwords_list = set(stopwords.words('English'))
+    # print(stopwords_list)
+
+    # Tokenise
+    nltk.download('punkt')
+    tokens = word_tokenize(removed_punctation)
+
+    tokenised_words = []
+    for word in tokens:
+        if word not in stopwords_list:
+            tokenised_words.append(word)
+
+    # print(tokenised_words)
+
+
+    # Lemmatize
+    nltk.download('wordnet')
+    lm = WordNetLemmatizer()
+    lemmatized_words = []
+
+    for word in tokenised_words:
+        lemmatized_words.append(lm.lemmatize(word))
+    
+    print(lemmatized_words)
+
 
     '''
     1 - remove punctuation
@@ -114,10 +162,72 @@ def tes4():
     2 - remove stopwords
         - nltk 
     3 - save bigrams
+        - game name?
+        - publisher?
     4 - tokenise
     5 - stem/lem
         - prefer stem?
     '''
+
+def test5():
+    kgrams = []
+
+    # get the name of html file from csv file
+    videogame_details = pandas.read_csv('videogame-labels.csv')
+    videogame_dict = videogame_details.to_dict(orient='records')  # Convert CVS file from pandas data structure to dictionary
+
+    for record in videogame_dict:
+        print(record)
+
+    # get the url from each record reading to scrape, add to list
+    list_of_urls = []
+    for record in videogame_dict:
+    #     if "a" in record.get('publisher'):
+    #         kgrams.append(record.get('publisher'))
+    #
+    #     elif " " in record['developer']:
+    #         kgrams.append(record['developer'])
+
+
+        url = record['url']
+        list_of_urls.append(url)
+
+    print(list_of_urls)
+
+    # beautiful soup
+    for url in list_of_urls:
+        # remove unneccessary parts of url for html file search
+        pattern = regex.compile(r"^.*?/.*?/")  # match from start, any character until first /, then repeat until next one
+        simpleURL = regex.sub(pattern, "", url)
+        # print(simpleURL)
+
+        # r = requests.get('videogames/' + simpleURL)
+        r = open('videogames/' + simpleURL, 'r')
+        soup = BeautifulSoup(r.read(), 'html5lib')
+        soup.prettify()
+        # print(soup)
+
+        # Get game title for bigram
+        raw_title = soup.find_all("title")
+        game_title = regex.sub(r"GameSpy: ", "", raw_title[0].get_text())
+        kgrams.append(game_title)
+        print(game_title)
+
+        # Remove css and js from scraped html
+        for data in soup(['style', 'script']):
+            data.decompose()
+
+        # Get all text from under the content id
+        data = soup.find_all(id='content')
+        refined_data = str(data[0].get_text())
+        pattern = regex.compile(r"\s+")
+        simplified_data = regex.sub(pattern, " ", refined_data)
+        print(simplified_data)
+
+    # print(kgram)
+
+def get_bigrams():
+    print("x")
 
 #Write to file
 
@@ -132,5 +242,6 @@ def main():
     # test2("a")
     # test3()
     tes4()
+    # test5()
 
 main()
