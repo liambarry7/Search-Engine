@@ -104,6 +104,7 @@ def webScraper():
         print(w)
 
 
+
 def getQuery():
     query = input("Please enter your query: ")
     return query
