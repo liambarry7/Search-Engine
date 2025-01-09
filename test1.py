@@ -55,16 +55,17 @@ def cvsReader():
 
 
 # Taking the html off a website
-def test2(w):
+def test2():
     # URL = "https://en.wikipedia.org/wiki/Fernando_Alonso"
     URL = "https://en.wikipedia.org/wiki/Kelly_Rohrbach"
     a = "https://"
-    # URL = "videogame/ps2.gamespy.com/24.html"
+    URL = "videogame/ps2.gamespy.com/24.html"
     # URL = a + "videogame/ps2.gamespy.com/24.html"
     print(URL)
     r = requests.get(URL) # gets html from URL
     # print(r.content)
-    soup = BeautifulSoup(r.content, 'html5lib') # r.content = raw html, html5lib = html parser
+    soup = BeautifulSoup(r.content, 'html.parser') # r.content = raw html, html5lib = html parser
+    # soup = BeautifulSoup(r.content, 'html5lib') # r.content = raw html, html5lib = html parser
     print(soup.prettify()) # formats html
 
 
@@ -241,7 +242,8 @@ def main():
     # cvsReader()
     # test2("a")
     # test3()
-    tes4()
+    # tes4()
     # test5()
+    test2()
 
 main()
