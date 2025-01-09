@@ -119,7 +119,7 @@ def csv_reader():
 
     # return videogame_dict
 
-def web_scrapper(soup):
+def web_scrapper():
     # soup = beautifulSoup()
     return 0
 
@@ -252,6 +252,18 @@ def main():
 
     # multi_term_tdidf("Hello World Fifa", list)
 
+    ''' --- TO DO ---
+        - Get query tf-idf
+        - Use Vector Space model
+        - Cosine? 
+            - both are equal to the dot product slide 50
+            - Normalised vectors
+        - Stemming ()
+        - Clean up webscraper()
+        - Read in html files differently
+        - CVS look up method for result comparisons
+        - Build different engines utilising different components
+    '''
 
 
 main()
