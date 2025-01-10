@@ -105,6 +105,8 @@ def webScraper():
     for i in multi:
         print(i)
 
+    x = query_tfidf("wwe raw soldier", list_of_document_tokens)
+
 def getQuery():
     query = input("Please enter your query: ")
     return query
@@ -165,6 +167,8 @@ def term_frequency(term, doc_tokens):
         if term == i:
             frequency += 1
 
+    # .count for frequency?
+
     if (frequency > 0):
         tf = 1 + math.log(frequency, 10) # log x, base 10
         return tf
@@ -220,26 +224,47 @@ def tf_idf(term, vg_list):
     return vg_tfidf
 
 def multi_term_tdidf(query, vg_list):
-    query_terms = query.split(" ")
+    query_terms = query.split(" ") # ------------ change to use tokeniser
     print(query_terms)
 
     docs_tfidf = []
 
     for i in range(len(vg_list)):
 
-        term_tdidf_list = []
+        term_tfidf_list = []
+        tfidf_list = []
 
         for j in range(len(query_terms)):
             tfidf = term_frequency(query_terms[j], vg_list[i]["Tokens"]) * inverse_document_frequency(query_terms[j], vg_list)
             # print(tfidf)
 
             t = {"Term": query_terms[j], "tf-idf": tfidf}
-            term_tdidf_list.append(t)
+            term_tfidf_list.append(t)
+            tfidf_list.append(tfidf)
 
-        all_terms_tfidf = {"Doc name": vg_list[i]["Name"], "Query tf-idf": term_tdidf_list}
+        all_terms_tfidf = {"Doc name": vg_list[i]["Name"], "Vector": tfidf_list, "Query-term tf-idf": term_tfidf_list}
         docs_tfidf.append(all_terms_tfidf)
 
     return docs_tfidf
+
+def vector_space():
+    print("Vectors")
+
+def query_tfidf(query, vg_list):
+    # Create tf-idf for the query
+    query_tokens = tokeniser(query)
+    query_tfidf = []
+
+    for term in query_tokens:
+        tf = term_frequency(term, query_tokens)
+        idf = inverse_document_frequency(term, vg_list)
+        tfidf = tf * idf
+        t = {"Term": term, "tf-idf": tfidf}
+        query_tfidf.append(t)
+
+    # print (query_tfidf)
+    return query_tfidf
+
 
 def main():
     # query = getQuery()
@@ -253,7 +278,8 @@ def main():
     # multi_term_tdidf("Hello World Fifa", list)
 
     ''' --- TO DO ---
-        - Get query tf-idf
+        - Get query tf-idf - check it works
+        - check if multi tfidf and single term tfidf are the same (mutli handles singular queries)
         - Use Vector Space model
         - Cosine? 
             - both are equal to the dot product slide 50
