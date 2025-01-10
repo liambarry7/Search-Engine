@@ -294,8 +294,6 @@ def query_tfidf(query, vg_list):
 
     query_tfidf = {"Terms": term_tfidf, "Vector": vector}
 
-    # print (query_tfidf)
-    # return query_tfidf
     return query_tfidf
 
 def vector_space(query_tfidf, vg_docs_tfidf):
@@ -335,11 +333,12 @@ def cosine_similarity(dp_result_set):
     # print("\n\n\n")
 
     sorted_rs = sorted(dp_result_set, key=lambda x:x['Dot product'], reverse = True)
-    # for i in sorted():
+    # for i in sorted_rs:
     #     print(i)
+    #     print("")
 
     # @10 precision
-    for i in range(1, 10):
+    for i in range(0, 10):
         print(sorted_rs[i])
 def main():
     # query = getQuery()
@@ -356,16 +355,14 @@ def main():
     # vector_space([5,4,3], [9,8,7])
 
     ''' --- TO DO ---
-        - Use Vector Space model
-        - Cosine? 
-            - both are equal to the dot product slide 50
-            - Normalised vectors
         - Stemming ()
         - Clean up webscraper()
         - Read in html files differently
         - CVS look up method for result comparisons
         - Build different engines utilising different components
         - need to lem/stem the query to get to the same simplification as the docment text
+        - named entity recognition
+        - user interface
     '''
 
 
