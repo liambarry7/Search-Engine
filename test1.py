@@ -1,4 +1,6 @@
 import csv
+import time
+
 import regex
 import requests
 from bs4 import BeautifulSoup, Comment
@@ -76,10 +78,59 @@ def test3():
     # loop through videogames file
 
     for file in os.listdir(directory):
+        time.sleep(10)
         with open(os.path.join(directory, file)) as f:
-            print(f"content: {file}")
+            # print(f"content: {file}")
             # print(f.read()) # print contents of file
+
+            soup = BeautifulSoup(f.read(), 'html5lib')
+            soup.prettify()
+            print(soup)
+
+            # Remove css and js from scraped html
+            for data in soup(['style', 'script']):
+                data.decompose()
+
+            # Get all text from under the content id
+            # data = soup.find_all(id='content')
+            # refined_data = str(data[0].get_text())
+            # pattern = regex.compile(r"\s+")
+            # simplified_data = regex.sub(pattern, " ", refined_data)
+            # print(simplified_data)
+
         print()
+
+def fileOpener():
+    file = os.listdir('videogames')
+    print(file)
+    file.remove(file[0]) # Remove .DS_store from list of files
+
+    # Create file directory list
+    file_list = []
+    for i in range(len(file)):
+        web_pages = "videogames/" + file[i]
+        file_list.append(web_pages)
+
+    return file_list
+
+def scraperTest(paths):
+     print("scraper2")
+     for path in paths:
+         r = open(path, 'r')
+         soup = BeautifulSoup(r.read(), 'html5lib')
+         soup.prettify()
+         # print(soup)
+
+         for data in soup(['style', 'script']):
+             data.decompose()
+
+         # Get all text from under the content id
+         data = soup.find_all(id='content')
+         refined_data = str(data[0].get_text())
+         pattern = regex.compile(r"\s+")
+         simplified_data = regex.sub(pattern, " ", refined_data)
+
+         print(simplified_data) # Return this
 
 def remove_tags(html):
 
@@ -244,6 +295,11 @@ def main():
     # test3()
     # tes4()
     # test5()
-    test2()
+    # test2()
+    a = fileOpener()
+    print (a)
+    scraperTest(a)
+
+
 
 main()

@@ -103,6 +103,10 @@ def webScraper():
     for w in list_of_document_tokens:
         print(w)
 
+def engine1():
+    print("Engine 1: Full components")
+
+# def web_scraper(path):
 
 
 def getQuery():

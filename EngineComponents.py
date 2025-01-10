@@ -1,4 +1,5 @@
 import math
+import os
 
 import numpy
 import pandas
@@ -52,7 +53,7 @@ def webScraper():
         # print(soup)
 
 
-        # --------------------------------------------
+        # -------------------------------------------- REMOVE?
         # Get game title for kgram/raw name
         raw_title = soup.find_all("title")
         game_title = regex.sub(r"GameSpy: ", "", raw_title[0].get_text())
@@ -86,7 +87,25 @@ def webScraper():
         vg_tokens = {"Name": game_title, "Tokens": lemmatized_words}
         list_of_document_tokens.append(vg_tokens)
 
+    query = "racing action sport"
 
+    # --- Get tf-idf scores for each document based on the query terms ---
+    doc_scores = tfidf(query, list_of_document_tokens)
+
+    # --- Get tf-idf score for the query ---
+    query_scores = query_tfidf(query, list_of_document_tokens)
+
+    # --- Get cosine scores using vector normalisation and dot product ---
+    dp_results = []
+    for q in doc_scores:
+        x = vector_space(query_scores["Vector"], q["Vector"]) # query tfidf scores, doc tfidf scores
+        result_set = {"Name": q["Name"], "Dot product": x}
+        dp_results.append(result_set)
+
+    # --- Cosine comparison (order and precision @10)
+    cosine_similarity(dp_results)
+
+    '''
     # ---- testing ----
     # for w in list_of_document_tokens:
     #     print(w)
@@ -108,15 +127,15 @@ def webScraper():
 
     # query = "soldier ps2 age"
     query = "racing action sport"
-    multi = tdidf(query, list_of_document_tokens)
+    multi = tfidf(query, list_of_document_tokens)
     # # multi = tdidf("soldier", list_of_document_tokens)
     # for i in multi:
     #     print(i)
 
 
     query_scores = query_tfidf(query, list_of_document_tokens)
-    for i in query_scores:
-        print(i)
+    print(query_scores)
+
 
     # for i in range(len(multi)):
     #     vector_space(query_scores["Vector"], multi[i]["Vector"]) # query tfidf scores, doc tfidf scores
@@ -134,6 +153,7 @@ def webScraper():
 
     cosine_similarity(dp_results)
 
+    '''
 
 
 def getQuery():
@@ -150,7 +170,12 @@ def csv_reader():
 
     # return videogame_dict
 
-def web_scrapper():
+def web_scraperX(path):
+    for file in os.listdir(path):
+        with open(os.path.join(path, file)) as f:
+            content = f.read()
+
+
     # soup = beautifulSoup()
     return 0
 
@@ -252,10 +277,10 @@ def inverse_document_frequency(term, vg_list):
 #     # returns list of each doc's tf-idf of the term
 #     return vg_tfidf
 
-def tdidf(query, vg_list):
+def tfidf(query, vg_list):
     query_terms = query.split(" ") # ------------ change to use tokeniser
     # query_terms = tokeniser(query) # ------------ change to use tokeniser
-    print(query_terms)
+    # print(query_terms)
 
 
     docs_tfidf = []
