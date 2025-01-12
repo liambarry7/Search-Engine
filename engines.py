@@ -1,14 +1,9 @@
 import engine_components as ec
 
-
-def enginex():
-    print("Engine 1: Full components")
-    return ec.query_dealer(ec.get_query())
-
-
 def engine1():
     # --- Lemmatisation
     query = ec.query_dealer(ec.get_query(), 1)
+    expanded_query = ec.synonym_expansion(query)
 
     # --- Retrieve filenames ---
     files = ec.file_accesser()
@@ -38,10 +33,10 @@ def engine1():
 
     # print(document_tokens)
     # --- Get tf-idf scores for each doc based on the query terms ---
-    doc_scores = ec.tfidf(query, document_tokens)
+    doc_scores = ec.tfidf(expanded_query, document_tokens)
 
     # --- Get tf-idf score for the query ---
-    query_scores = ec.query_tfidf(query, document_tokens)
+    query_scores = ec.query_tfidf(expanded_query, document_tokens)
 
     # --- Get cosine scores using vector normalisation and dot product ---
     dp_results = []
@@ -51,11 +46,12 @@ def engine1():
         dp_results.append(result_set)
 
     # --- Cosine comparison (order & precision @ 10)
-    ec.cosine_similarity(dp_results)
+    ec.cosine_similarity(dp_results, raw_data)
 
 def engine2():
     # --- Stemming
     query = ec.query_dealer(ec.get_query(), 2)
+    expanded_query = ec.synonym_expansion(query)
 
     # --- Retrieve filenames ---
     files = ec.file_accesser()
@@ -85,10 +81,10 @@ def engine2():
 
     # print(document_tokens)
     # --- Get tf-idf scores for each doc based on the query terms ---
-    doc_scores = ec.tfidf(query, document_tokens)
+    doc_scores = ec.tfidf(expanded_query, document_tokens)
 
     # --- Get tf-idf score for the query ---
-    query_scores = ec.query_tfidf(query, document_tokens)
+    query_scores = ec.query_tfidf(expanded_query, document_tokens)
 
     # --- Get cosine scores using vector normalisation and dot product ---
     dp_results = []
@@ -98,11 +94,12 @@ def engine2():
         dp_results.append(result_set)
 
     # --- Cosine comparison (order & precision @ 10)
-    ec.cosine_similarity(dp_results)
+    ec.cosine_similarity(dp_results, raw_data)
 
 def engine3():
     # No stemming or lemmatisation
     query = ec.query_dealer(ec.get_query(), 3)
+    expanded_query = ec.synonym_expansion(query)
 
     # --- Retrieve filenames ---
     files = ec.file_accesser()
@@ -132,10 +129,10 @@ def engine3():
 
     # print(document_tokens)
     # --- Get tf-idf scores for each doc based on the query terms ---
-    doc_scores = ec.tfidf(query, document_tokens)
+    doc_scores = ec.tfidf(expanded_query, document_tokens)
 
     # --- Get tf-idf score for the query ---
-    query_scores = ec.query_tfidf(query, document_tokens)
+    query_scores = ec.query_tfidf(expanded_query, document_tokens)
 
     # --- Get cosine scores using vector normalisation and dot product ---
     dp_results = []
@@ -145,11 +142,12 @@ def engine3():
         dp_results.append(result_set)
 
     # --- Cosine comparison (order & precision @ 10)
-    ec.cosine_similarity(dp_results)
+    ec.cosine_similarity(dp_results, raw_data)
 
 def engine4():
     # Stopwords remaining
     query = ec.query_dealer(ec.get_query(), 1)
+    expanded_query = ec.synonym_expansion(query)
 
     # --- Retrieve filenames ---
     files = ec.file_accesser()
@@ -176,10 +174,10 @@ def engine4():
 
     # print(document_tokens)
     # --- Get tf-idf scores for each doc based on the query terms ---
-    doc_scores = ec.tfidf(query, document_tokens)
+    doc_scores = ec.tfidf(expanded_query, document_tokens)
 
     # --- Get tf-idf score for the query ---
-    query_scores = ec.query_tfidf(query, document_tokens)
+    query_scores = ec.query_tfidf(expanded_query, document_tokens)
 
     # --- Get cosine scores using vector normalisation and dot product ---
     dp_results = []
@@ -189,11 +187,12 @@ def engine4():
         dp_results.append(result_set)
 
     # --- Cosine comparison (order & precision @ 10)
-    ec.cosine_similarity(dp_results)
+    ec.cosine_similarity(dp_results, raw_data)
 
 def engine5():
     # Punctuation remaining
     query = ec.query_dealer(ec.get_query(), 1)
+    expanded_query = ec.synonym_expansion(query)
 
     # --- Retrieve filenames ---
     files = ec.file_accesser()
@@ -220,10 +219,10 @@ def engine5():
 
     # print(document_tokens)
     # --- Get tf-idf scores for each doc based on the query terms ---
-    doc_scores = ec.tfidf(query, document_tokens)
+    doc_scores = ec.tfidf(expanded_query, document_tokens)
 
     # --- Get tf-idf score for the query ---
-    query_scores = ec.query_tfidf(query, document_tokens)
+    query_scores = ec.query_tfidf(expanded_query, document_tokens)
 
     # --- Get cosine scores using vector normalisation and dot product ---
     dp_results = []
@@ -233,7 +232,7 @@ def engine5():
         dp_results.append(result_set)
 
     # --- Cosine comparison (order & precision @ 10)
-    ec.cosine_similarity(dp_results)
+    ec.cosine_similarity(dp_results, raw_data)
 
 def engine6():
     # No Query Expansion
@@ -277,11 +276,12 @@ def engine6():
         dp_results.append(result_set)
 
     # --- Cosine comparison (order & precision @ 10)
-    ec.cosine_similarity(dp_results)
+    ec.cosine_similarity(dp_results, raw_data)
 
 def engine7():
     # No Named Entity Recognition
     query = ec.query_dealer(ec.get_query(), 1)
+    expanded_query = ec.synonym_expansion(query)
 
     # --- Retrieve filenames ---
     files = ec.file_accesser()
@@ -308,10 +308,10 @@ def engine7():
 
     # print(document_tokens)
     # --- Get tf-idf scores for each doc based on the query terms ---
-    doc_scores = ec.tfidf(query, document_tokens)
+    doc_scores = ec.tfidf(expanded_query, document_tokens)
 
     # --- Get tf-idf score for the query ---
-    query_scores = ec.query_tfidf(query, document_tokens)
+    query_scores = ec.query_tfidf(expanded_query, document_tokens)
 
     # --- Get cosine scores using vector normalisation and dot product ---
     dp_results = []
@@ -321,11 +321,4 @@ def engine7():
         dp_results.append(result_set)
 
     # --- Cosine comparison (order & precision @ 10)
-    ec.cosine_similarity(dp_results)
-
-
-def main():
-    q = enginex()
-    engine1(q)
-
-# main()
+    ec.cosine_similarity(dp_results, raw_data)

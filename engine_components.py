@@ -16,147 +16,7 @@ from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 # nltk.download('punkt')
 from nltk import PorterStemmer
-# time.sleep(3) # Ensures all ntlk downloads are up-to-date before system begins
-
-#
-# def webScraper():
-#     kgrams = []
-#
-#     # get the name of html file from csv file
-#     videogame_details = pandas.read_csv('videogame-labels.csv')
-#     videogame_dict = videogame_details.to_dict(orient='records') # Convert CVS file from pandas data structure to dictionary
-#
-#     # count = 0
-#     # for record in videogame_dict:
-#     #     print(record)
-#     #     count += 1
-#     # print(count)
-#
-#     # get the url from each record reading to scrape, add to list
-#     list_of_urls = []
-#     for record in videogame_dict:
-#         url = record['url']
-#         list_of_urls.append(url)
-#
-#     # print(list_of_urls)
-#
-#     # Dictionary to store all tokens from one document
-#     list_of_document_tokens = []
-#
-#     # beautiful soup
-#     for url in list_of_urls:
-#         # remove unneccessary parts of url for html file search
-#         pattern = regex.compile(r"^.*?/.*?/") # match from start, any character until first /, then repeat until next one
-#         simpleURL = regex.sub(pattern, "", url)
-#         # print(simpleURL)
-#
-#         # r = requests.get('videogames/' + simpleURL)
-#         r = open('videogames/' + simpleURL, 'r')
-#         soup = BeautifulSoup(r.read(), 'html5lib')
-#         soup.prettify()
-#         # print(soup)
-#
-#
-#         # -------------------------------------------- REMOVE?
-#         # Get game title for kgram/raw name
-#         raw_title = soup.find_all("title")
-#         game_title = regex.sub(r"GameSpy: ", "", raw_title[0].get_text())
-#         kgrams.append(game_title)
-#         # print(game_title)
-#         # --------------------------------------------
-#
-#         # Remove css and js from scraped html
-#         for data in soup(['style', 'script']):
-#             data.decompose()
-#
-#         # Get all text from under the content id
-#         data = soup.find_all(id='content')
-#         refined_data = str(data[0].get_text())
-#         pattern = regex.compile(r"\s+")
-#         simplified_data = regex.sub(pattern, " ", refined_data)
-#         # print(simplified_data)
-#
-#         # --- remove punctuation and lowercase ---
-#         removed_punctuation = remove_punc(simplified_data)
-#
-#         # --- Tokenise ---
-#         tokens = tokeniser(removed_punctuation)
-#
-#         # --- Remove stopwords ---
-#         tokened_removed_stopwords = remove_stopwords(tokens)
-#
-#         # --- Lemmatize ---
-#         lemmatized_words = lemmatizer(tokened_removed_stopwords)
-#
-#         vg_tokens = {"Name": game_title, "Tokens": lemmatized_words}
-#         list_of_document_tokens.append(vg_tokens)
-#
-#     query = "racing action sport"
-#
-#     # --- Get tf-idf scores for each document based on the query terms ---
-#     doc_scores = tfidf(query, list_of_document_tokens)
-#
-#     # --- Get tf-idf score for the query ---
-#     query_scores = query_tfidf(query, list_of_document_tokens)
-#
-#     # --- Get cosine scores using vector normalisation and dot product ---
-#     dp_results = []
-#     for q in doc_scores:
-#         x = vector_space(query_scores["Vector"], q["Vector"]) # query tfidf scores, doc tfidf scores
-#         result_set = {"Name": q["Name"], "Dot product": x}
-#         dp_results.append(result_set)
-#
-#     # --- Cosine comparison (order and precision @10)
-#     cosine_similarity(dp_results)
-#
-#
-#     # ---- testing ----
-#     # for w in list_of_document_tokens:
-#     #     print(w)
-#     #     print(w["Tokens"][4])
-#     #     if "ps2" in w["Tokens"]:
-#     #         print("True")
-#
-#
-#     # testTokens = list_of_document_tokens[0]["Tokens"]
-#     # print (testTokens)
-#     # x = term_frequency("hackgu", testTokens)
-#     # print ("tf ", x)
-#     #
-#     # print(inverse_document_frequency("wwe", list_of_document_tokens))
-#
-#     # tfidf_list = tfidf("ICO", list_of_document_tokens)
-#     # for i in tfidf_list:
-#     #     print(i)
-#
-#     # query = "soldier ps2 age"
-#     query = "racing action sport"
-#     multi = tfidf(query, list_of_document_tokens)
-#     # # multi = tdidf("soldier", list_of_document_tokens)
-#     # for i in multi:
-#     #     print(i)
-#
-#
-#     query_scores = query_tfidf(query, list_of_document_tokens)
-#     print(query_scores)
-#
-#
-#     # for i in range(len(multi)):
-#     #     vector_space(query_scores["Vector"], multi[i]["Vector"]) # query tfidf scores, doc tfidf scores
-#
-#     dp_results = []
-#     for q in multi:
-#         # print(q["Name"])
-#         # print(q)
-#         x = vector_space(query_scores["Vector"], q["Vector"]) # query tfidf scores, doc tfidf scores
-#         result_set = {"Name": q["Name"], "Dot product": x}
-#         dp_results.append(result_set)
-#
-#     # for i in dp_results:
-#     #     print(i)
-#
-#     cosine_similarity(dp_results)
-
+from nltk.corpus import wordnet
 
 def instal_nltk_datasets():
     print("Initalising...")
@@ -189,6 +49,17 @@ def query_dealer(query, text_normalisation = 1):
     elif text_normalisation == 3:
         return revised_query
 
+def synonym_expansion(query):
+    expanded_query = set() # Use set as no duplicates allowed
+
+    for term in query.split():
+        expanded_query.add(term) # Add the original term back to query
+        for synonym in wordnet.synsets(term):
+            for word in synonym.lemmas():
+                expanded_query.add(word.name().replace('_', ' '))
+
+    return ' '.join(map(str, expanded_query))
+
 def csv_reader():
     # Get the name of html file from csv file
     videogame_details = pandas.read_csv('videogame-labels.csv')
@@ -219,8 +90,8 @@ def web_scraper(paths):
         r = open(path, 'r')
         soup = BeautifulSoup(r.read(), 'html5lib')
         soup.prettify()
-        # print(soup)
 
+        # Remove all css and javacript from data
         for data in soup(['style', 'script']):
             data.decompose()
 
@@ -230,9 +101,6 @@ def web_scraper(paths):
         pattern = regex.compile(r"\s+")
         simplified_data = regex.sub(pattern, " ", refined_data)
 
-        # print(simplified_data) # Return this
-        # raw_data.append(simplified_data)
-
         # Get game title
         raw_title = soup.find_all("title")
         game_title = regex.sub(r"GameSpy: ", "", raw_title[0].get_text())
@@ -240,14 +108,6 @@ def web_scraper(paths):
         raw_data.append({"Name": game_title, "Data": simplified_data})
 
     return raw_data
-
-def getGameTitle(path):
-    r = open(path, 'r')
-    soup = BeautifulSoup(r.read(), 'html5lib')
-    soup.prettify()
-    raw_title = soup.find_all("title")
-    game_title = regex.sub(r"GameSpy: ", "", raw_title[0].get_text())
-    return game_title
 
 def remove_punc(text_data):
     # Removing punctuation from text
@@ -404,19 +264,31 @@ def vector_len_normalisation(vector):
     # print(len_normalised)
     return len_normalised
 
-def cosine_similarity(dp_result_set):
+def cosine_similarity(dp_result_set, game_desc):
     # Sort out result set of the dot product calculation into desc order
     sorted_rs = sorted(dp_result_set, key=lambda x:x['Dot product'], reverse = True)
 
     # @10 precision
     for i in range(0, 10):
-        print(sorted_rs[i])
+        # Match the game titles to find the correct description
+        for j in range(len(game_desc)):
+            if sorted_rs[i]["Name"] == game_desc[j]["Name"]:
+                print("{} - {}:{}... dp:{}".format(i+1, sorted_rs[i]["Name"], game_desc[j]["Data"][:100], sorted_rs[i]["Dot product"]))
+
+    precision = sum(1 for x in sorted_rs[:10] if x["Dot product"] > 0)
+    print(f"Precision @10: {precision}")
 
     # Press key to continue after results displayed
-    input("Press enter to continue...")
+    x = input("Press enter to continue...")
 
-def test_engine(query):
+def named_entity_relation():
+    print("NER")
+    # https://www.geeksforgeeks.org/named-entity-recognition/
+
+def test_engine():
     # --- Testing
+    query = query_dealer(get_query(), 1)
+    expanded_query = synonym_expansion(query)
 
     # --- Retrieve filenames ---
     files = file_accesser()
@@ -426,6 +298,7 @@ def test_engine(query):
     document_tokens = []
 
     for data in raw_data:
+
         # --- remove punctuation and lowercase ---
         removed_punctuation = remove_punc(data["Data"])
 
@@ -446,10 +319,10 @@ def test_engine(query):
 
     # print(document_tokens)
     # --- Get tf-idf scores for each doc based on the query terms ---
-    doc_scores = tfidf(query, document_tokens)
+    doc_scores = tfidf(expanded_query, document_tokens)
 
     # --- Get tf-idf score for the query ---
-    query_scores = query_tfidf(query, document_tokens)
+    query_scores = query_tfidf(expanded_query, document_tokens)
 
     # --- Get cosine scores using vector normalisation and dot product ---
     dp_results = []
@@ -459,7 +332,7 @@ def test_engine(query):
         dp_results.append(result_set)
 
     # --- Cosine comparison (order & precision @ 10)
-    cosine_similarity(dp_results)
+    cosine_similarity(dp_results, raw_data)
 
 
 def main():
@@ -470,28 +343,30 @@ def main():
 
     instal_nltk_datasets()
     # query = query_dealer(get_query())
-    # test_engine(query)
+    test_engine()
 
-    lm = WordNetLemmatizer()
-    print(lm.lemmatize("smallest"))
-    ps = PorterStemmer()
-    print(ps.stem("smallest"))
+    # lm = WordNetLemmatizer()
+    # print(lm.lemmatize("smallest"))
+    # ps = PorterStemmer()
+    # print(ps.stem("smallest"))
 
 
 
 
     ''' --- TO DO ---
-        - CVS look up method for result comparisons
-        - Build different engines utilising different components
-        - need to lem/stem the query to get to the same simplification as the docment text
+        - CVS look up method for result comparisons (thinking select sql kinda thing)
         - named entity recognition
-        - Query()
         - README file
-        - only return games with a score higher than 0
-        - "press enter to continue" message after search is complete/results are displayed
-        - jarcard?
+        - use matlib to generate graphs of dp
+        
+        Links:
+        https://www.geeksforgeeks.org/get-synonymsantonyms-nltk-wordnet-python/
+        https://courses.cs.washington.edu/courses/cse373/17au/project3/project3-2.html
+        https://numpy.org/doc/2.1/reference/generated/numpy.dot.html
+        https://www.simplilearn.com/tutorials/python-tutorial/list-to-string-in-python#:~:text=To%20convert%20a%20list%20to%20a%20string%2C%20use%20Python%20List,and%20return%20it%20as%20output.
+        
         
     '''
-
+    # synonym_expansion("run joggers")
 
 # main()
