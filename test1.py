@@ -22,8 +22,6 @@ def cvsReader():
         myFile = csv.reader(file)
         myFile = csv.DictReader(file)
 
-
-
         line_count = 0
         list_of_games = []
 

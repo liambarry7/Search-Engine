@@ -273,7 +273,8 @@ def cosine_similarity(dp_result_set, game_desc):
         # Match the game titles to find the correct description
         for j in range(len(game_desc)):
             if sorted_rs[i]["Name"] == game_desc[j]["Name"]:
-                print("{} - {}:{}... dp:{}".format(i+1, sorted_rs[i]["Name"], game_desc[j]["Data"][:100], sorted_rs[i]["Dot product"]))
+                print("{} - {}:{}... dp:{}".format(i+1, sorted_rs[i]["Name"], game_desc[j]["Data"][:100]))
+                # print("{} - {}:{}... dp:{}".format(i+1, sorted_rs[i]["Name"], game_desc[j]["Data"][:100], sorted_rs[i]["Dot product"]))
 
     precision = sum(1 for x in sorted_rs[:10] if x["Dot product"] > 0)
     print(f"Precision @10: {precision}")
