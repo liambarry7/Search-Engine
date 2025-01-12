@@ -1,11 +1,5 @@
 import engine_components as ec
 
-
-def enginex():
-    print("Engine 1: Full components")
-    return ec.query_dealer(ec.get_query())
-
-
 def engine1():
     # --- Lemmatisation
     query = ec.query_dealer(ec.get_query(), 1)
@@ -52,7 +46,7 @@ def engine1():
         dp_results.append(result_set)
 
     # --- Cosine comparison (order & precision @ 10)
-    ec.cosine_similarity(dp_results)
+    ec.cosine_similarity(dp_results, raw_data)
 
 def engine2():
     # --- Stemming
@@ -100,7 +94,7 @@ def engine2():
         dp_results.append(result_set)
 
     # --- Cosine comparison (order & precision @ 10)
-    ec.cosine_similarity(dp_results)
+    ec.cosine_similarity(dp_results, raw_data)
 
 def engine3():
     # No stemming or lemmatisation
@@ -148,7 +142,7 @@ def engine3():
         dp_results.append(result_set)
 
     # --- Cosine comparison (order & precision @ 10)
-    ec.cosine_similarity(dp_results)
+    ec.cosine_similarity(dp_results, raw_data)
 
 def engine4():
     # Stopwords remaining
@@ -193,7 +187,7 @@ def engine4():
         dp_results.append(result_set)
 
     # --- Cosine comparison (order & precision @ 10)
-    ec.cosine_similarity(dp_results)
+    ec.cosine_similarity(dp_results, raw_data)
 
 def engine5():
     # Punctuation remaining
@@ -238,7 +232,7 @@ def engine5():
         dp_results.append(result_set)
 
     # --- Cosine comparison (order & precision @ 10)
-    ec.cosine_similarity(dp_results)
+    ec.cosine_similarity(dp_results, raw_data)
 
 def engine6():
     # No Query Expansion
@@ -282,7 +276,7 @@ def engine6():
         dp_results.append(result_set)
 
     # --- Cosine comparison (order & precision @ 10)
-    ec.cosine_similarity(dp_results)
+    ec.cosine_similarity(dp_results, raw_data)
 
 def engine7():
     # No Named Entity Recognition
@@ -327,11 +321,4 @@ def engine7():
         dp_results.append(result_set)
 
     # --- Cosine comparison (order & precision @ 10)
-    ec.cosine_similarity(dp_results)
-
-
-def main():
-    q = enginex()
-    engine1(q)
-
-# main()
+    ec.cosine_similarity(dp_results, raw_data)

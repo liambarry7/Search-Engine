@@ -15,7 +15,7 @@ def main():
                               "\n5 - With punctuation?"
                               "\n6 - No query expansion"
                               "\n7 - No named entity recognition np"
-                              "\n0 - Quit")
+                              "\n0 - Quit\n")
 
         if (engine_choice == '0'):
             break

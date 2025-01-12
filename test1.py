@@ -12,7 +12,6 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 
-from VideoGame import VideoGame
 
 
 #Read file
@@ -22,8 +21,6 @@ def cvsReader():
     with open('videogame-labels.csv', mode = 'r') as file:
         myFile = csv.reader(file)
         myFile = csv.DictReader(file)
-
-
 
         line_count = 0
         list_of_games = []
