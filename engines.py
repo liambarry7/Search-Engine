@@ -9,6 +9,7 @@ def enginex():
 def engine1():
     # --- Lemmatisation
     query = ec.query_dealer(ec.get_query(), 1)
+    expanded_query = ec.synonym_expansion(query)
 
     # --- Retrieve filenames ---
     files = ec.file_accesser()
@@ -38,10 +39,10 @@ def engine1():
 
     # print(document_tokens)
     # --- Get tf-idf scores for each doc based on the query terms ---
-    doc_scores = ec.tfidf(query, document_tokens)
+    doc_scores = ec.tfidf(expanded_query, document_tokens)
 
     # --- Get tf-idf score for the query ---
-    query_scores = ec.query_tfidf(query, document_tokens)
+    query_scores = ec.query_tfidf(expanded_query, document_tokens)
 
     # --- Get cosine scores using vector normalisation and dot product ---
     dp_results = []
@@ -56,6 +57,7 @@ def engine1():
 def engine2():
     # --- Stemming
     query = ec.query_dealer(ec.get_query(), 2)
+    expanded_query = ec.synonym_expansion(query)
 
     # --- Retrieve filenames ---
     files = ec.file_accesser()
@@ -85,10 +87,10 @@ def engine2():
 
     # print(document_tokens)
     # --- Get tf-idf scores for each doc based on the query terms ---
-    doc_scores = ec.tfidf(query, document_tokens)
+    doc_scores = ec.tfidf(expanded_query, document_tokens)
 
     # --- Get tf-idf score for the query ---
-    query_scores = ec.query_tfidf(query, document_tokens)
+    query_scores = ec.query_tfidf(expanded_query, document_tokens)
 
     # --- Get cosine scores using vector normalisation and dot product ---
     dp_results = []
@@ -103,6 +105,7 @@ def engine2():
 def engine3():
     # No stemming or lemmatisation
     query = ec.query_dealer(ec.get_query(), 3)
+    expanded_query = ec.synonym_expansion(query)
 
     # --- Retrieve filenames ---
     files = ec.file_accesser()
@@ -132,10 +135,10 @@ def engine3():
 
     # print(document_tokens)
     # --- Get tf-idf scores for each doc based on the query terms ---
-    doc_scores = ec.tfidf(query, document_tokens)
+    doc_scores = ec.tfidf(expanded_query, document_tokens)
 
     # --- Get tf-idf score for the query ---
-    query_scores = ec.query_tfidf(query, document_tokens)
+    query_scores = ec.query_tfidf(expanded_query, document_tokens)
 
     # --- Get cosine scores using vector normalisation and dot product ---
     dp_results = []
@@ -150,6 +153,7 @@ def engine3():
 def engine4():
     # Stopwords remaining
     query = ec.query_dealer(ec.get_query(), 1)
+    expanded_query = ec.synonym_expansion(query)
 
     # --- Retrieve filenames ---
     files = ec.file_accesser()
@@ -176,10 +180,10 @@ def engine4():
 
     # print(document_tokens)
     # --- Get tf-idf scores for each doc based on the query terms ---
-    doc_scores = ec.tfidf(query, document_tokens)
+    doc_scores = ec.tfidf(expanded_query, document_tokens)
 
     # --- Get tf-idf score for the query ---
-    query_scores = ec.query_tfidf(query, document_tokens)
+    query_scores = ec.query_tfidf(expanded_query, document_tokens)
 
     # --- Get cosine scores using vector normalisation and dot product ---
     dp_results = []
@@ -194,6 +198,7 @@ def engine4():
 def engine5():
     # Punctuation remaining
     query = ec.query_dealer(ec.get_query(), 1)
+    expanded_query = ec.synonym_expansion(query)
 
     # --- Retrieve filenames ---
     files = ec.file_accesser()
@@ -220,10 +225,10 @@ def engine5():
 
     # print(document_tokens)
     # --- Get tf-idf scores for each doc based on the query terms ---
-    doc_scores = ec.tfidf(query, document_tokens)
+    doc_scores = ec.tfidf(expanded_query, document_tokens)
 
     # --- Get tf-idf score for the query ---
-    query_scores = ec.query_tfidf(query, document_tokens)
+    query_scores = ec.query_tfidf(expanded_query, document_tokens)
 
     # --- Get cosine scores using vector normalisation and dot product ---
     dp_results = []
@@ -282,6 +287,7 @@ def engine6():
 def engine7():
     # No Named Entity Recognition
     query = ec.query_dealer(ec.get_query(), 1)
+    expanded_query = ec.synonym_expansion(query)
 
     # --- Retrieve filenames ---
     files = ec.file_accesser()
@@ -308,10 +314,10 @@ def engine7():
 
     # print(document_tokens)
     # --- Get tf-idf scores for each doc based on the query terms ---
-    doc_scores = ec.tfidf(query, document_tokens)
+    doc_scores = ec.tfidf(expanded_query, document_tokens)
 
     # --- Get tf-idf score for the query ---
-    query_scores = ec.query_tfidf(query, document_tokens)
+    query_scores = ec.query_tfidf(expanded_query, document_tokens)
 
     # --- Get cosine scores using vector normalisation and dot product ---
     dp_results = []

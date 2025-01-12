@@ -16,6 +16,7 @@ from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 # nltk.download('punkt')
 from nltk import PorterStemmer
+from nltk.corpus import wordnet
 # time.sleep(3) # Ensures all ntlk downloads are up-to-date before system begins
 
 #
@@ -188,6 +189,18 @@ def query_dealer(query, text_normalisation = 1):
 
     elif text_normalisation == 3:
         return revised_query
+
+def synonym_expansion(query):
+    expanded_query = set() # Use set as no duplicates allowed
+
+    for term in query.split():
+        expanded_query.add(term) # Add the original term back to query
+        for synonym in wordnet.synsets(term):
+            for word in synonym.lemmas():
+                expanded_query.add(word.name().replace('_', ' '))
+
+    return ' '.join(map(str, expanded_query))
+
 
 def csv_reader():
     # Get the name of html file from csv file
@@ -415,8 +428,10 @@ def cosine_similarity(dp_result_set):
     # Press key to continue after results displayed
     input("Press enter to continue...")
 
-def test_engine(query):
+def test_engine():
     # --- Testing
+    query = query_dealer(get_query(), 1)
+    expanded_query = synonym_expansion(query)
 
     # --- Retrieve filenames ---
     files = file_accesser()
@@ -446,10 +461,10 @@ def test_engine(query):
 
     # print(document_tokens)
     # --- Get tf-idf scores for each doc based on the query terms ---
-    doc_scores = tfidf(query, document_tokens)
+    doc_scores = tfidf(expanded_query, document_tokens)
 
     # --- Get tf-idf score for the query ---
-    query_scores = query_tfidf(query, document_tokens)
+    query_scores = query_tfidf(expanded_query, document_tokens)
 
     # --- Get cosine scores using vector normalisation and dot product ---
     dp_results = []
@@ -470,28 +485,31 @@ def main():
 
     instal_nltk_datasets()
     # query = query_dealer(get_query())
-    # test_engine(query)
+    # test_engine()
 
-    lm = WordNetLemmatizer()
-    print(lm.lemmatize("smallest"))
-    ps = PorterStemmer()
-    print(ps.stem("smallest"))
+    # lm = WordNetLemmatizer()
+    # print(lm.lemmatize("smallest"))
+    # ps = PorterStemmer()
+    # print(ps.stem("smallest"))
 
 
 
 
     ''' --- TO DO ---
         - CVS look up method for result comparisons
-        - Build different engines utilising different components
-        - need to lem/stem the query to get to the same simplification as the docment text
         - named entity recognition
-        - Query()
         - README file
         - only return games with a score higher than 0
-        - "press enter to continue" message after search is complete/results are displayed
         - jarcard?
         
+        Links:
+        https://www.geeksforgeeks.org/get-synonymsantonyms-nltk-wordnet-python/
+        https://courses.cs.washington.edu/courses/cse373/17au/project3/project3-2.html
+        https://numpy.org/doc/2.1/reference/generated/numpy.dot.html
+        https://www.simplilearn.com/tutorials/python-tutorial/list-to-string-in-python#:~:text=To%20convert%20a%20list%20to%20a%20string%2C%20use%20Python%20List,and%20return%20it%20as%20output.
+        
+        
     '''
-
+    synonym_expansion("run joggers")
 
 # main()

@@ -13,7 +13,7 @@ def main():
                               "\n3 - No lem/stem"
                               "\n4 - With stopwords"
                               "\n5 - With punctuation?"
-                              "\n6 - No query expansion np"
+                              "\n6 - No query expansion"
                               "\n7 - No named entity recognition np"
                               "\n0 - Quit")
 
@@ -24,23 +24,19 @@ def main():
             engines.engine1()
 
         elif engine_choice == '2':
-            print("2")
             engines.engine2()
 
         elif engine_choice == '3':
-            print("3")
             engines.engine3()
 
         elif engine_choice == '4':
-            print("4")
             engines.engine4()
 
         elif engine_choice == '5':
-            print("5")
             engines.engine5()
 
         elif engine_choice == '6':
-            print("6")
+            engines.engine6()
 
         elif engine_choice == '7':
             print("7")
