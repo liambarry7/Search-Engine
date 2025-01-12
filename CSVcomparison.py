@@ -30,7 +30,6 @@
 #     elif text_normalisation == 3:
 #         terms = ec.query_dealer(query, 3) # No lem/stem
 #
-#     print(terms)
 #
 #     for i in vg:
 #         for j in terms.split(' '):
