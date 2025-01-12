@@ -115,6 +115,8 @@ def fileOpener():
 
 def scraperTest(paths):
      print("scraper2")
+     raw_data = []
+
      for path in paths:
          r = open(path, 'r')
          soup = BeautifulSoup(r.read(), 'html5lib')
@@ -130,7 +132,10 @@ def scraperTest(paths):
          pattern = regex.compile(r"\s+")
          simplified_data = regex.sub(pattern, " ", refined_data)
 
-         print(simplified_data) # Return this
+         # print(simplified_data) # Return this
+         raw_data.append(simplified_data)
+
+     return raw_data
 
 def remove_tags(html):
 
@@ -298,8 +303,10 @@ def main():
     # test2()
     a = fileOpener()
     print (a)
-    scraperTest(a)
+    b = scraperTest(a)
+    for i in b:
+        print(b)
 
 
 
-main()
+# main()
