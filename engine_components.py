@@ -355,7 +355,6 @@ def main():
 
 
     ''' --- TO DO ---
-        - CVS look up method for result comparisons (thinking select sql kinda thing)
         - named entity recognition
         - README file
         - use matlib to generate graphs of dp
