@@ -13,8 +13,9 @@ def main():
                               "\n3 - No lem/stem"
                               "\n4 - With stopwords"
                               "\n5 - With punctuation"
-                              "\n6 - No query expansion"
-                              "\n7 - No metadata weighting"
+                              "\n6 - With query expansion"
+                              "\n7 - With metadata weighting"
+                              "\n8 - No query expansion or metadata weighting"
                               "\n0 - Quit\n")
 
         if (engine_choice == '0'):
@@ -39,7 +40,10 @@ def main():
             engines.engine6()
 
         elif engine_choice == '7':
-            print("7")
+            engines.engine7()
+
+        elif engine_choice == '8':
+            engines.engine8()
 
         else:
             print("Please try again.")
