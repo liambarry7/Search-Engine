@@ -20,19 +20,22 @@ from nltk.tokenize import word_tokenize
 from nltk import PorterStemmer
 from nltk.corpus import wordnet
 
+
 def instal_nltk_datasets():
     print("Initalising...")
     nltk.download('stopwords')
     nltk.download('wordnet')
     nltk.download('punkt')
-    time.sleep(3) # Ensures all ntlk downloads are up-to-date before system begins
+    time.sleep(3)  # Ensures all ntlk downloads are up-to-date before system begins
+
 
 def get_query():
     query = input("Please enter your query: ")
     print("Searching...")
     return query
 
-def query_dealer(query, text_normalisation = 1):
+
+def query_dealer(query, text_normalisation=1):
     # Deal with query to get into same format as doc data
     # Remove any punctuation
     revised_query = remove_punc(query)
@@ -51,52 +54,74 @@ def query_dealer(query, text_normalisation = 1):
     elif text_normalisation == 3:
         return revised_query
 
+
 def synonym_expansion(query):
-    expanded_query = set() # Use set as no duplicates allowed
+    expanded_query = set()  # Use set as no duplicates allowed
 
     for term in query.split():
-        expanded_query.add(term) # Add the original term back to query
+        expanded_query.add(term)  # Add the original term back to query
         for synonym in wordnet.synsets(term):
             for word in synonym.lemmas():
                 expanded_query.add(word.name().replace('_', ' '))
 
     return ' '.join(map(str, expanded_query))
-#
-# def csv_reader():
-#     # Get the name of html file from csv file
-#     videogame_details = pandas.read_csv('videogame-labels.csv')
-#     videogame_dict = videogame_details.to_dict(orient='records')  # Convert CVS file from pandas data structure to dictionary
-#
-#     for record in videogame_dict:
-#         print(record)
-#
-#     # return videogame_dict
-#
-# def get_metadata():
-#     videogame_details = pandas.read_csv('videogame-labels.csv')
-#     videogame_dict = videogame_details.to_dict(orient='records')  # Convert CVS file from pandas data structure to dictionary
-#
-#
-#
-#     documents_metadata = []
-#     for record in videogame_dict:
-#         # name = record["url"].split("/")[-1].replace('-', ' ').replace('.html', '').lower()
-#         record['url'] = record["url"].split("/")[-1].replace('-', ' ').replace('.html', '').lower()
-#         # record.pop("url")
-#         # record["Name"] = name
-#         documents_metadata.append(record)
-#
-#         # documents_metadata.append((', '.join(map(str, record.values()))).replace(',', ''))
-#         # pure_data = (', '.join(map(str, record.values()))).replace(',', '').lower()
-#         # dict_data = {"Name": name, "Metadata": pure_data}
-#         # documents_metadata.append(dict_data)
-#
-#
-#     # Sort list
-#     sorted_docs = sorted(documents_metadata, key=lambda doc: (not doc['url'][0].isdigit(), doc['url']))
-#     # return documents_metadata
-#     # print(sorted_docs)
-#     return sorted_docs
+
+
+def csv_reader(game):
+    # Get the name of html file from csv file
+    videogame_details = pandas.read_csv('videogame-labels.csv')
+    # Convert CVS file from pandas data structure to dictionary
+    videogame_dict = videogame_details.to_dict(orient='records')
+
+    for record in videogame_dict:
+        if record['url'] == 'videogame/ps2.gamespy.com/' + game:
+            # print(record)
+            return record
+
+    # return videogame_dict
+
+def get_metadataX(game):
+    # print(game)
+    try:
+        game['url'] = game["url"].split("/")[-1].replace('-', ' ').replace('.html', '').lower()
+        values = list(game.values())
+        values = ' '.join(map(str, values))  # all but first value
+        values = remove_punc(values)
+        values = values.split(" ")
+        return values
+        # print(values)
+
+    except Exception as e:
+        # capture errors such as path not existing in csv
+        print(f"Error: {e}")
+        return ''
+
+
+def get_metadata():
+    videogame_details = pandas.read_csv('videogame-labels.csv')
+    # Convert CVS file from pandas data structure to dictionary
+    videogame_dict = videogame_details.to_dict(
+        orient='records')
+
+    documents_metadata = []
+    for record in videogame_dict:
+        # name = record["url"].split("/")[-1].replace('-', ' ').replace('.html', '').lower()
+        record['url'] = record["url"].split("/")[-1].replace('-', ' ').replace('.html', '').lower()
+        # record.pop("url")
+        # record["Name"] = name
+        documents_metadata.append(record)
+
+        # documents_metadata.append((', '.join(map(str, record.values()))).replace(',', ''))
+        # pure_data = (', '.join(map(str, record.values()))).replace(',', '').lower()
+        # dict_data = {"Name": name, "Metadata": pure_data}
+        # documents_metadata.append(dict_data)
+
+    # Sort list
+    sorted_docs = sorted(documents_metadata, key=lambda doc: (not doc['url'][0].isdigit(), doc['url']))
+    # return documents_metadata
+    # print(sorted_docs)
+    return sorted_docs
+
 
 def file_accesser():
     file = os.listdir('videogames')
@@ -110,6 +135,7 @@ def file_accesser():
         file_list.append(web_pages)
 
     return file_list
+
 
 def web_scraper(paths):
     raw_data = []
@@ -133,9 +159,18 @@ def web_scraper(paths):
         raw_title = soup.find_all("title")
         game_title = regex.sub(r"GameSpy: ", "", raw_title[0].get_text())
 
-        raw_data.append({"Name": game_title, "Data": simplified_data})
+
+        # get metadata from csv
+        #remove videogames/ from paths
+        # print(path)
+        simple_path = path.replace('videogames/', '')
+        metadata = get_metadataX(csv_reader(simple_path))
+
+        raw_data.append({"Name": game_title, "Metadata": metadata, "Data": simplified_data})
+
 
     return raw_data
+
 
 def remove_punc(text_data):
     # Removing punctuation from text
@@ -144,10 +179,12 @@ def remove_punc(text_data):
     # print(removed_punctation)
     return removed_punctation
 
+
 def tokeniser(text_data):
     # Tokenise words
     tokens = word_tokenize(text_data)
     return tokens
+
 
 def remove_stopwords(text_data):
     stopwords_list = set(stopwords.words('English'))
@@ -158,6 +195,7 @@ def remove_stopwords(text_data):
 
     return tokenised_words
 
+
 def lemmatizer(tokens):
     lm = WordNetLemmatizer()
     lemmatized_words = []
@@ -167,6 +205,7 @@ def lemmatizer(tokens):
 
     return lemmatized_words
 
+
 def stemming(tokens):
     ps = PorterStemmer()
     stemmed_words = []
@@ -175,6 +214,7 @@ def stemming(tokens):
         stemmed_words.append(ps.stem(word))
 
     return stemmed_words
+
 
 def term_frequency(term, doc_tokens):
     # if no term in doc, score = 0
@@ -191,63 +231,64 @@ def term_frequency(term, doc_tokens):
     # frequency = 0
     # for i in doc_tokens:
     #     for metadata in list(documents_metadata):
-            # print(metadata)
+    # print(metadata)
 
-            # if term == i: # in query
-            #     if name == metadata["Name"]:
-            #         for j in metadata["Metadata"].split(" "):
-            #             if j == term: # in metadata
-            #                 frequency += 1
-            # else:
-            #     frequency += 1
+    # if term == i: # in query
+    #     if name == metadata["Name"]:
+    #         for j in metadata["Metadata"].split(" "):
+    #             if j == term: # in metadata
+    #                 frequency += 1
+    # else:
+    #     frequency += 1
 
     # .count for frequency?
 
     if (frequency > 0):
-        tf = 1 + math.log(frequency, 10) # log x, base 10
+        tf = 1 + math.log(frequency, 10)  # log x, base 10
         return tf
 
     else:
         return 0
 
+
 # def query_term_frequency(term, doc_tokens):
-    # if no term in doc, score = 0
-    # tf = 1 + math.log(tf)
+# if no term in doc, score = 0
+# tf = 1 + math.log(tf)
 
-    # frequency = 0
-    # for i in doc_tokens:
-    #     if term == i:
-    #         frequency += 1
-    #
-    # if (frequency > 0):
-    #     tf = 1 + math.log(frequency, 10) # log x, base 10
-    #     return tf
-    #
-    # else:
-    #     return 0
+# frequency = 0
+# for i in doc_tokens:
+#     if term == i:
+#         frequency += 1
+#
+# if (frequency > 0):
+#     tf = 1 + math.log(frequency, 10) # log x, base 10
+#     return tf
+#
+# else:
+#     return 0
 
-    # documents_metadata = get_metadata()
-    # # for i in documents_metadata:
-    #
-    # frequency = 0
-    # for i in doc_tokens:
-    #     for metadata in list(documents_metadata):
-    #         # print(metadata)
-    #
-    #         if term == i:  # in query
-    #
-    #         #         for j in metadata["Metadata"].split(" "):
-    #         #             if j == term:  # in metadata
-    #         #                 frequency += 1
-    #         # else:
-    #             frequency += 1
-    #
-    # if (frequency > 0):
-    #     tf = 1 + math.log(frequency, 10) # log x, base 10
-    #     return tf
-    #
-    # else:
-    #     return 0
+# documents_metadata = get_metadata()
+# # for i in documents_metadata:
+#
+# frequency = 0
+# for i in doc_tokens:
+#     for metadata in list(documents_metadata):
+#         # print(metadata)
+#
+#         if term == i:  # in query
+#
+#         #         for j in metadata["Metadata"].split(" "):
+#         #             if j == term:  # in metadata
+#         #                 frequency += 1
+#         # else:
+#             frequency += 1
+#
+# if (frequency > 0):
+#     tf = 1 + math.log(frequency, 10) # log x, base 10
+#     return tf
+#
+# else:
+#     return 0
 
 def inverse_document_frequency(term, vg_list):
     # idf = math.log(n / df)
@@ -261,7 +302,7 @@ def inverse_document_frequency(term, vg_list):
         for token in vg["Tokens"]:
             if token == term:
                 document_frequency += 1
-                break # Break inner loop as term already found once in doc
+                break  # Break inner loop as term already found once in doc
         # else:
         #     continue # Continue until term occurs or not found
 
@@ -274,11 +315,11 @@ def inverse_document_frequency(term, vg_list):
         idf = math.log((collection_size / document_frequency), 10)
         return idf
 
+
 def tfidf(expanded_query, vg_list):
-    query_terms = expanded_query.split(" ") # ------------ change to use tokeniser
+    query_terms = expanded_query.split(" ")  # ------------ change to use tokeniser
     # query_terms = tokeniser(query) # ------------ change to use tokeniser
     # print(query_terms)
-
 
     docs_tfidf = []
 
@@ -289,126 +330,146 @@ def tfidf(expanded_query, vg_list):
 
         for j in range(len(query_terms)):
             tfidf = term_frequency(query_terms[j], vg_list[i]["Tokens"]) * inverse_document_frequency(query_terms[j], vg_list)
-            # print("tfidf", tfidf)
             # print("vg", vg_list[i]["Name"])
+            # print("tfidf", tfidf)
+
 
             # for data in get_metadata():
             # weight_booster(tfidf, document_tokens, query) # not with synonyms to keep context of query
             # weight_booster(tfidf, vg_list[i], query) # not with synonyms to keep context of query
-            # weighted_tfidf = weight_booster(tfidf, i, query_terms[j]) # i is the index
+            weighted_tfidf = weight_booster(tfidf, vg_list[i]["Metadata"], query_terms[j])  # i is the index
             # print(weighted_tfidf)
 
-            # t = {"Term": query_terms[j], "tf-idf": weighted_tfidf}
-            t = {"Term": query_terms[j], "tf-idf": tfidf}
+            t = {"Term": query_terms[j], "tf-idf": weighted_tfidf}
+            # t = {"Term": query_terms[j], "tf-idf": tfidf}
             term_tfidf_list.append(t)
-            tfidf_list.append(tfidf)
-            # tfidf_list.append(weighted_tfidf)
+            # tfidf_list.append(tfidf)
+            tfidf_list.append(weighted_tfidf)
 
         all_terms_tfidf = {"Name": vg_list[i]["Name"], "Vector": tfidf_list, "Query-term tf-idf": term_tfidf_list}
         docs_tfidf.append(all_terms_tfidf)
 
     return docs_tfidf
 
+
 def query_tfidf(query, vg_list):
     # Create tf-idf for the query
-    query_tokens = tokeniser(remove_punc(query)) # Remove punctuation and make lower case to align with text data
+    query_tokens = tokeniser(remove_punc(query))  # Remove punctuation and make lower case to align with text data
     term_tfidf = []
     vector = []
 
     for term in query_tokens:
-        tf = term_frequency(term, query_tokens) # count number of times each term appears in query, divided by total number of terms in query
+        tf = term_frequency(term,
+                            query_tokens)  # count number of times each term appears in query, divided by total number of terms in query
         idf = inverse_document_frequency(term, vg_list)
         tfidf = tf * idf
-        t = {"Term": term, "tf-idf": tfidf}
+
+        weighted_tfidf = weight_booster(tfidf, query_tokens, term)
+
+
+        # t = {"Term": term, "tf-idf": tfidf}
+        t = {"Term": term, "tf-idf": weighted_tfidf}
         term_tfidf.append(t)
-        vector.append(tfidf)
+        # vector.append(tfidf)
+        vector.append(weighted_tfidf)
 
     query_tfidf = {"Terms": term_tfidf, "Vector": vector}
 
     return query_tfidf
 
-# def weight_booster(tfidf, index, query):
-#     print("Boost")
-#     metadata = get_metadata()
-#     # print(metadata)
-#
-#     # query_terms = remove_stopwords(query.split(" "))
-#     # already individual query term
-#
-#     mulitplier = 0
-#     # for metadata in get_metadata():
-#     #     print(metadata)
-#     #     # result = metadata.values()
-#     #     result = ' '.join(map(str, metadata.values()))
-#     #     result = remove_punc(result)
-#     #     result = result.split(" ")
-#     #     # result = ' '.join(map(str, remove_punc(metadata.values()))) # turn into list of strings
-#     #     print(result)
-#     # print(len(metadata))
-#     # print(index)
-#     data = metadata[index-1]
-#     print("meta", data["url"], "\n")
-#
-#     results = ' '.join(map(str, data.values()))
-#     results = remove_punc(results)
-#     results = results.split(" ")
-#     # print(results)
-#     # print(query)
-#
-#     weighted_tfidf = 0
-#     for term in results:
-#         if term == query:
-#             weighted_tfidf = tfidf * 10
-#
-#     # print(weighted_tfidf)
-#     return weighted_tfidf
-#
-#
-#     # for data in metadata[index-1]:
-#     #     print(data)
-#
-#         # result = data.values()
-#         # result = ' '.join(map(str, metadata.values()))
-#         # result = remove_punc(result)
-#         # result = result.split(" ")
-#         # # result = ' '.join(map(str, remove_punc(metadata.values()))) # turn into list of strings
-#         # print(result)
-#
-#
-#         # for key, value in metadata.items():
-#         #     print(value)
-#             # if query in value:
-#             #     print("Query in metadata")
-#             # data = str(value).lower().split(" ")
-#             # print(value)
-#             # print(remove_punc(str(value)))
-#             # metadata_values = remove_punc(str(value)).split(" ")
-#             # for x in remove_punc(str(value)).split(" "):
-#             # common_terms = [term for term in query_terms if term in metadata_values]
-#             # print("common terms", common_terms)
-#             # mulitplier = mulitplier + len(common_terms) # add no of common terms to multipler
-#
-#
-#     # for data in metadata:
-#     #     result = ' '.join(map(str, data.values()))
-#     #     result = remove_punc(result).lower()
-#     #     meta = result.split(" ")
-#     #     q = query.split(" ")
-#     #     q = remove_stopwords(q)
-#     #     # print(result)
-#     #
-#     #     for term in q:
-#     #         for i in meta:
-#     #             if term == i:
-#     #                 print(result)
-#
-#     # for vg in vg_list:
-#     #     name = remove_punc(vg["Name"]).lower()
-#     #     print(name)
-#     #     # for data in metadata:
-#     #     #     # print(data["Name"])
-#     #     #     if name == data["url"]:
-#     #     #         print(data)
+
+def weight_booster(tfidf, metadata, query):
+    # print("Boost")
+    # print(f"query {query}")
+    new_weight = 0
+    for term in metadata:
+        # print(f"term {term}")
+        if query == term:
+            new_weight = tfidf * 1.5
+            # print("Succ")
+
+    return new_weight
+
+    '''
+    # metadata = get_metadata()
+    # print(metadata)
+
+    # query_terms = remove_stopwords(query.split(" "))
+    # already individual query term
+
+    mulitplier = 0
+    # for metadata in get_metadata():
+    #     print(metadata)
+    #     # result = metadata.values()
+    #     result = ' '.join(map(str, metadata.values()))
+    #     result = remove_punc(result)
+    #     result = result.split(" ")
+    #     # result = ' '.join(map(str, remove_punc(metadata.values()))) # turn into list of strings
+    #     print(result)
+    # print(len(metadata))
+    # print(index)
+    data = metadata[index - 1]
+    print("meta", data["url"], "\n")
+
+    results = ' '.join(map(str, data.values()))
+    results = remove_punc(results)
+    results = results.split(" ")
+    # print(results)
+    # print(query)
+
+    weighted_tfidf = 0
+    for term in results:
+        if term == query:
+            weighted_tfidf = tfidf * 10
+
+    # print(weighted_tfidf)
+    return weighted_tfidf
+
+    # for data in metadata[index-1]:
+    #     print(data)
+
+    # result = data.values()
+    # result = ' '.join(map(str, metadata.values()))
+    # result = remove_punc(result)
+    # result = result.split(" ")
+    # # result = ' '.join(map(str, remove_punc(metadata.values()))) # turn into list of strings
+    # print(result)
+
+    # for key, value in metadata.items():
+    #     print(value)
+    # if query in value:
+    #     print("Query in metadata")
+    # data = str(value).lower().split(" ")
+    # print(value)
+    # print(remove_punc(str(value)))
+    # metadata_values = remove_punc(str(value)).split(" ")
+    # for x in remove_punc(str(value)).split(" "):
+    # common_terms = [term for term in query_terms if term in metadata_values]
+    # print("common terms", common_terms)
+    # mulitplier = mulitplier + len(common_terms) # add no of common terms to multipler
+
+    # for data in metadata:
+    #     result = ' '.join(map(str, data.values()))
+    #     result = remove_punc(result).lower()
+    #     meta = result.split(" ")
+    #     q = query.split(" ")
+    #     q = remove_stopwords(q)
+    #     # print(result)
+    #
+    #     for term in q:
+    #         for i in meta:
+    #             if term == i:
+    #                 print(result)
+
+    # for vg in vg_list:
+    #     name = remove_punc(vg["Name"]).lower()
+    #     print(name)
+    #     # for data in metadata:
+    #     #     # print(data["Name"])
+    #     #     if name == data["url"]:
+    #     #         print(data)
+    '''
+
 
 def vector_space(query_tfidf, vg_docs_tfidf):
     # print("Vectors")
@@ -420,10 +481,11 @@ def vector_space(query_tfidf, vg_docs_tfidf):
     dot_product = numpy.dot(normalised_query_v, normalised_docs_v)
     return float(dot_product)
 
+
 def vector_len_normalisation(vector):
     # Divide each term/component by the vector magnitude
     # Normalised vector lengths are always 1
-    magnitude = math.sqrt(sum([i**2 for i in vector]))
+    magnitude = math.sqrt(sum([i ** 2 for i in vector]))
     if magnitude == 0:
         # return an array of len(vector) of 0s for ease of dot product calculation
         return [0 for l in vector]
@@ -432,9 +494,10 @@ def vector_len_normalisation(vector):
         len_normalised = [x / magnitude for x in vector]
     return len_normalised
 
+
 def cosine_similarity(dp_result_set, game_desc):
     # Sort out result set of the dot product calculation into desc order
-    sorted_rs = sorted(dp_result_set, key=lambda x:x['Dot product'], reverse = True)
+    sorted_rs = sorted(dp_result_set, key=lambda x: x['Dot product'], reverse=True)
 
     # @10 precision
     for i in range(0, 10):
@@ -442,7 +505,8 @@ def cosine_similarity(dp_result_set, game_desc):
         for j in range(len(game_desc)):
             if sorted_rs[i]["Name"] == game_desc[j]["Name"]:
                 # print("{} - {}:{}... ".format(i+1, sorted_rs[i]["Name"], game_desc[j]["Data"][:100]))
-                print("{} - {}:{}... dp:{}".format(i+1, sorted_rs[i]["Name"], game_desc[j]["Data"][:100], sorted_rs[i]["Dot product"]))
+                print("{} - {}:{}... dp:{}".format(i + 1, sorted_rs[i]["Name"], game_desc[j]["Data"][:100],
+                                                   sorted_rs[i]["Dot product"]))
 
     precision = sum(1 for x in sorted_rs[:10] if x["Dot product"] > 0)
     print(f"Precision @10: {precision}")
@@ -450,17 +514,18 @@ def cosine_similarity(dp_result_set, game_desc):
     # Press key to continue after results displayed
     x = input("Press enter to continue...")
 
+
 def named_entity_relation(document):
     # TEST METHOD
     # https://www.geeksforgeeks.org/named-entity-recognition/
     # use spacy
     # Add to document tokens
-    nlp = spacy.load("en_core_web_sm") # Load english spacy model
+    nlp = spacy.load("en_core_web_sm")  # Load english spacy model
 
-    document_entities = set() # Empty set to hold each name once
+    document_entities = set()  # Empty set to hold each name once
 
-    content = nlp(document['Data']) # Process text
-    for ent in content.ents: # Extract entities
+    content = nlp(document['Data'])  # Process text
+    for ent in content.ents:  # Extract entities
         document_entities.add((ent.text).lower())
 
     return ', '.join(map(str, document_entities))
@@ -478,8 +543,8 @@ def test_engine():
     raw_data = web_scraper(files)
     document_tokens = []
 
-    for data in raw_data:
 
+    for data in raw_data:
         # --- remove punctuation and lowercase ---
         removed_punctuation = remove_punc(data["Data"])
 
@@ -495,7 +560,7 @@ def test_engine():
         # --- Stemming ---
         stemming(tokened_removed_stopwords)
 
-        vg_tokens = {"Name": data["Name"], "Tokens": lemmatized_words}
+        vg_tokens = {"Name": data["Name"], "Metadata": data["Metadata"], "Tokens": lemmatized_words}
         # vg_tokens = {"Name": data["Name"], "Tokens": lemmatized_words, "Entities": named_entity_relation(data)}
         document_tokens.append(vg_tokens)
 
@@ -503,12 +568,11 @@ def test_engine():
 
     # weight_booster(1.4, document_tokens, query) # not with synonyms to keep context of query
 
-
     # --- Get tf-idf scores for each doc based on the query terms ---
     doc_scores = tfidf(expanded_query, document_tokens)
     # doc_scores = tfidf(expanded_query, document_tokens, query)
-    # print(doc_scores)
-
+    for i in doc_scores:
+        print(i)
 
     # --- Get tf-idf score for the query ---
     query_scores = query_tfidf(expanded_query, document_tokens)
@@ -538,8 +602,8 @@ def main():
     # a = file_accesser()
     # b = web_scraper(a)
     # for x in b:
-        # print(named_entity_relation(x))
-        # print(x)
+    # print(named_entity_relation(x))
+    # print(x)
 
     # named_entity_relation(b)
 
@@ -548,24 +612,22 @@ def main():
     # ps = PorterStemmer()
     # print(ps.stem("smallest"))
 
-
-
-
     ''' --- TO DO ---
         - named entity recognition
         - metadata?
         - bigrams of metadata and query?
         - README file
         - use matlib to generate graphs of dp
-        
+
         Links:
         https://www.geeksforgeeks.org/get-synonymsantonyms-nltk-wordnet-python/
         https://courses.cs.washington.edu/courses/cse373/17au/project3/project3-2.html
         https://numpy.org/doc/2.1/reference/generated/numpy.dot.html
         https://www.simplilearn.com/tutorials/python-tutorial/list-to-string-in-python#:~:text=To%20convert%20a%20list%20to%20a%20string%2C%20use%20Python%20List,and%20return%20it%20as%20output.
-        
-        
+
+
     '''
     # synonym_expansion("run joggers")
 
-# main()
+
+main()

@@ -14,7 +14,7 @@ def main():
                               "\n4 - With stopwords"
                               "\n5 - With punctuation"
                               "\n6 - No query expansion"
-                              "\n7 - No named entity recognition np"
+                              "\n7 - No metadata weighting"
                               "\n0 - Quit\n")
 
         if (engine_choice == '0'):
