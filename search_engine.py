@@ -8,11 +8,11 @@ def main():
     while(True):
         print("\n--- Video Game Search Engine ---")
         engine_choice = input("Choose engine:"
-                              "\n1 - Lemmatisation"
+                              "\n1 - Lemmatization"
                               "\n2 - Stemming"
                               "\n3 - No lem/stem"
                               "\n4 - With stopwords"
-                              "\n5 - With punctuation?"
+                              "\n5 - With punctuation"
                               "\n6 - No query expansion"
                               "\n7 - No named entity recognition np"
                               "\n0 - Quit\n")

@@ -12,14 +12,33 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 
+import engine_components as ec
+
 
 
 #Read file
 # read .csv file
+
+def get_metadata():
+    videogame_details = pandas.read_csv('videogame-labels.csv')
+    videogame_dict = videogame_details.to_dict(orient='records')  # Convert CVS file from pandas data structure to dictionary
+
+    documents_metadata = []
+    for record in videogame_dict:
+        print(record)
+        name = record["url"].split("/")[-1].replace('-', ' ').lower()
+        record["Name"] = record.pop("url")
+        documents_metadata.append(record)
+        print(record)
+
+    return documents_metadata
+
+
+
 def cvsReader():
     # Reads csv file
     with open('videogame-labels.csv', mode = 'r') as file:
-        myFile = csv.reader(file)
+        # myFile = csv.reader(file)
         myFile = csv.DictReader(file)
 
         line_count = 0
@@ -298,12 +317,12 @@ def main():
     # tes4()
     # test5()
     # test2()
-    a = fileOpener()
-    print (a)
-    b = scraperTest(a)
-    for i in b:
-        print(b)
+    # a = fileOpener()
+    # print (a)
+    # b = scraperTest(a)
+    # for i in b:
+    #     print(b)
+    get_metadata()
 
 
-
-# main()
+main()

@@ -1,4 +1,5 @@
 import engine_components as ec
+import named_entity_recognition as ner
 
 def engine1():
     # --- Lemmatisation
@@ -303,15 +304,16 @@ def engine7():
         # --- Lemmatize ---
         lemmatized_words = ec.lemmatizer(tokened_removed_stopwords)
 
-        vg_tokens = {"Name": data["Name"], "Tokens": lemmatized_words}
+        # vg_tokens = {"Name": data["Name"], "Tokens": lemmatized_words}
+        vg_tokens = {"Name": data["Name"], "Tokens": lemmatized_words, "Entities": ner.named_entity_relation(data)} # end of ner progress
         document_tokens.append(vg_tokens)
 
     # print(document_tokens)
     # --- Get tf-idf scores for each doc based on the query terms ---
-    doc_scores = ec.tfidf(expanded_query, document_tokens)
+    doc_scores = ner.tfidf(expanded_query, document_tokens)
 
     # --- Get tf-idf score for the query ---
-    query_scores = ec.query_tfidf(expanded_query, document_tokens)
+    query_scores = ner.query_tfidf(expanded_query, document_tokens)
 
     # --- Get cosine scores using vector normalisation and dot product ---
     dp_results = []

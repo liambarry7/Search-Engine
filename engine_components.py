@@ -4,6 +4,8 @@ import time
 
 import numpy
 import pandas
+import pandas as pd
+import spacy
 import regex
 
 from bs4 import BeautifulSoup, Comment
@@ -69,6 +71,23 @@ def csv_reader():
         print(record)
 
     # return videogame_dict
+
+def get_metadata():
+    videogame_details = pandas.read_csv('videogame-labels.csv')
+    videogame_dict = videogame_details.to_dict(orient='records')  # Convert CVS file from pandas data structure to dictionary
+
+    documents_metadata = []
+    for record in videogame_dict:
+        name = record["url"].split("/")[-1].replace('-', ' ').replace('.html', '').lower()
+        record.pop("url")
+        record["Name"] = name
+
+        # documents_metadata.append((', '.join(map(str, record.values()))).replace(',', ''))
+        pure_data = (', '.join(map(str, record.values()))).replace(',', '').lower()
+        dict_data = {"Name": name, "Metadata": pure_data}
+        documents_metadata.append(dict_data)
+
+    return documents_metadata
 
 def file_accesser():
     file = os.listdir('videogames')
@@ -157,6 +176,22 @@ def term_frequency(term, doc_tokens):
         if term == i:
             frequency += 1
 
+    # documents_metadata = get_metadata()
+    # for i in documents_metadata:
+
+    # frequency = 0
+    # for i in doc_tokens:
+    #     for metadata in list(documents_metadata):
+            # print(metadata)
+
+            # if term == i: # in query
+            #     if name == metadata["Name"]:
+            #         for j in metadata["Metadata"].split(" "):
+            #             if j == term: # in metadata
+            #                 frequency += 1
+            # else:
+            #     frequency += 1
+
     # .count for frequency?
 
     if (frequency > 0):
@@ -166,13 +201,50 @@ def term_frequency(term, doc_tokens):
     else:
         return 0
 
+# def query_term_frequency(term, doc_tokens):
+    # if no term in doc, score = 0
+    # tf = 1 + math.log(tf)
+
+    # frequency = 0
+    # for i in doc_tokens:
+    #     if term == i:
+    #         frequency += 1
+    #
+    # if (frequency > 0):
+    #     tf = 1 + math.log(frequency, 10) # log x, base 10
+    #     return tf
+    #
+    # else:
+    #     return 0
+
+    # documents_metadata = get_metadata()
+    # # for i in documents_metadata:
+    #
+    # frequency = 0
+    # for i in doc_tokens:
+    #     for metadata in list(documents_metadata):
+    #         # print(metadata)
+    #
+    #         if term == i:  # in query
+    #
+    #         #         for j in metadata["Metadata"].split(" "):
+    #         #             if j == term:  # in metadata
+    #         #                 frequency += 1
+    #         # else:
+    #             frequency += 1
+    #
+    # if (frequency > 0):
+    #     tf = 1 + math.log(frequency, 10) # log x, base 10
+    #     return tf
+    #
+    # else:
+    #     return 0
+
 def inverse_document_frequency(term, vg_list):
     # idf = math.log(n / df)
     # n = collection size
     # df = no of docs term is in
     # vg list = dictionary of each game's tokens
-
-    # print("\n\n")
 
     # Basic df check
     document_frequency = 0
@@ -242,26 +314,21 @@ def vector_space(query_tfidf, vg_docs_tfidf):
     # Length normalised vectors allow for cosine comparison (dot product)
     normalised_query_v = vector_len_normalisation(query_tfidf)
     normalised_docs_v = vector_len_normalisation(vg_docs_tfidf)
-    # print("normalised query ", normalised_query_v)
-    # print("normalised doc ", normalised_docs_v)
 
     # Dot product
     dot_product = numpy.dot(normalised_query_v, normalised_docs_v)
-    # print("dp", dot_product)
     return float(dot_product)
 
 def vector_len_normalisation(vector):
     # Divide each term/component by the vector magnitude
     # Normalised vector lengths are always 1
     magnitude = math.sqrt(sum([i**2 for i in vector]))
-    # print("vector len normalisation ", magnitude)
     if magnitude == 0:
         # return an array of len(vector) of 0s for ease of dot product calculation
         return [0 for l in vector]
 
     else:
         len_normalised = [x / magnitude for x in vector]
-    # print(len_normalised)
     return len_normalised
 
 def cosine_similarity(dp_result_set, game_desc):
@@ -273,8 +340,8 @@ def cosine_similarity(dp_result_set, game_desc):
         # Match the game titles to find the correct description
         for j in range(len(game_desc)):
             if sorted_rs[i]["Name"] == game_desc[j]["Name"]:
-                print("{} - {}:{}... ".format(i+1, sorted_rs[i]["Name"], game_desc[j]["Data"][:100]))
-                # print("{} - {}:{}... dp:{}".format(i+1, sorted_rs[i]["Name"], game_desc[j]["Data"][:100], sorted_rs[i]["Dot product"]))
+                # print("{} - {}:{}... ".format(i+1, sorted_rs[i]["Name"], game_desc[j]["Data"][:100]))
+                print("{} - {}:{}... dp:{}".format(i+1, sorted_rs[i]["Name"], game_desc[j]["Data"][:100], sorted_rs[i]["Dot product"]))
 
     precision = sum(1 for x in sorted_rs[:10] if x["Dot product"] > 0)
     print(f"Precision @10: {precision}")
@@ -282,9 +349,21 @@ def cosine_similarity(dp_result_set, game_desc):
     # Press key to continue after results displayed
     x = input("Press enter to continue...")
 
-def named_entity_relation():
-    print("NER")
+def named_entity_relation(document):
+    # TEST METHOD
     # https://www.geeksforgeeks.org/named-entity-recognition/
+    # use spacy
+    # Add to document tokens
+    nlp = spacy.load("en_core_web_sm") # Load english spacy model
+
+    document_entities = set() # Empty set to hold each name once
+
+    content = nlp(document['Data']) # Process text
+    for ent in content.ents: # Extract entities
+        document_entities.add((ent.text).lower())
+
+    return ', '.join(map(str, document_entities))
+
 
 def test_engine():
     # --- Testing
@@ -316,9 +395,10 @@ def test_engine():
         stemming(tokened_removed_stopwords)
 
         vg_tokens = {"Name": data["Name"], "Tokens": lemmatized_words}
+        # vg_tokens = {"Name": data["Name"], "Tokens": lemmatized_words, "Entities": named_entity_relation(data)}
         document_tokens.append(vg_tokens)
 
-    # print(document_tokens)
+    print(document_tokens)
     # --- Get tf-idf scores for each doc based on the query terms ---
     doc_scores = tfidf(expanded_query, document_tokens)
 
@@ -342,9 +422,17 @@ def main():
     # webScraper()
     # csv_reader()
 
-    instal_nltk_datasets()
+    # instal_nltk_datasets()
     # query = query_dealer(get_query())
     test_engine()
+
+    # a = file_accesser()
+    # b = web_scraper(a)
+    # for x in b:
+        # print(named_entity_relation(x))
+        # print(x)
+
+    # named_entity_relation(b)
 
     # lm = WordNetLemmatizer()
     # print(lm.lemmatize("smallest"))
@@ -356,6 +444,8 @@ def main():
 
     ''' --- TO DO ---
         - named entity recognition
+        - metadata?
+        - bigrams of metadata and query?
         - README file
         - use matlib to generate graphs of dp
         
