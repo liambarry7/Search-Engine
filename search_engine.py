@@ -15,7 +15,7 @@ def main():
                               "\n5 - With punctuation"
                               "\n6 - With query expansion"
                               "\n7 - With metadata weighting"
-                              "\n8 - No query expansion or metadata weighting"
+                              # "\n8 - No query expansion or metadata weighting"
                               "\n0 - Quit\n")
 
         if (engine_choice == '0'):

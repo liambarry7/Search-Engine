@@ -33,7 +33,6 @@ def engine1():
         vg_tokens = {"Name": data["Name"], "Tokens": lemmatized_words}
         document_tokens.append(vg_tokens)
 
-    # print(document_tokens)
     # --- Get tf-idf scores for each doc based on the query terms ---
     # doc_scores = ec.tfidf(expanded_query, document_tokens)
     doc_scores = ec.tfidf(query, document_tokens)
@@ -245,6 +244,7 @@ def engine5():
 def engine6():
     # No Query Expansion
     query = ec.query_dealer(ec.get_query(), 1)
+    expanded_query = ec.synonym_expansion(query)
 
     # --- Retrieve filenames ---
     files = ec.file_accesser()
@@ -270,10 +270,10 @@ def engine6():
         document_tokens.append(vg_tokens)
 
     # --- Get tf-idf scores for each doc based on the query terms ---
-    doc_scores = ec.tfidf(query, document_tokens)
+    doc_scores = ec.tfidf(expanded_query, document_tokens)
 
     # --- Get tf-idf score for the query ---
-    query_scores = ec.query_tfidf(query, document_tokens)
+    query_scores = ec.query_tfidf(expanded_query, document_tokens)
 
     # --- Get cosine scores using vector normalisation and dot product ---
     dp_results = []

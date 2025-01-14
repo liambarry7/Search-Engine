@@ -177,6 +177,6 @@ def weight_booster(tfidf, metadata, query):
     new_weight = tfidf # Return original weight if query not in metadata
     for term in metadata:
         if query == term:
-            new_weight = tfidf * 10
+            new_weight = tfidf * 10000
 
     return new_weight
