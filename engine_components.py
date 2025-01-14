@@ -38,7 +38,7 @@ def query_dealer(query, text_normalisation = 1):
     # Lemmatise/stemming depending on which the engine uses
     if text_normalisation == 1:
         revised_query = lemmatizer(revised_query.split(" "))
-        final_query = ' '.join(map(str, revised_query))
+        final_query = ' '.join(map(str, revised_query)) # https://www.simplilearn.com/tutorials/python-tutorial/list-to-string-in-python#:~:text=To%20convert%20a%20list%20to%20a%20string%2C%20use%20Python%20List,and%20return%20it%20as%20output
         return final_query
 
     elif text_normalisation == 2:
@@ -50,6 +50,8 @@ def query_dealer(query, text_normalisation = 1):
         return revised_query
 
 def synonym_expansion(query):
+    # https://www.geeksforgeeks.org/get-synonymsantonyms-nltk-wordnet-python/
+
     expanded_query = set() # Use set as no duplicates allowed
 
     for term in query.split():
@@ -178,6 +180,7 @@ def inverse_document_frequency(term, vg_list):
         return idf
 
 def tfidf(expanded_query, vg_list):
+    # https://courses.cs.washington.edu/courses/cse373/17au/project3/project3-2.html
     query_terms = expanded_query.split(" ") # ------------ change to use tokeniser
     # query_terms = tokeniser(query) # ------------ change to use tokeniser
 
@@ -219,7 +222,7 @@ def query_tfidf(query, vg_list):
     return query_tfidf
 
 def vector_space(query_tfidf, vg_docs_tfidf):
-    # print("Vectors")
+    # https://numpy.org/doc/2.1/reference/generated/numpy.dot.html
     # Length normalised vectors allow for cosine comparison (dot product)
     normalised_query_v = vector_len_normalisation(query_tfidf)
     normalised_docs_v = vector_len_normalisation(vg_docs_tfidf)
@@ -250,7 +253,7 @@ def cosine_similarity(dp_result_set, game_desc):
         for j in range(len(game_desc)):
             if sorted_rs[i]["Name"] == game_desc[j]["Name"]:
                 # print("{} - {}:{}... ".format(i+1, sorted_rs[i]["Name"], game_desc[j]["Data"][:100]))
-                print("{} - {}:{}... dp:{}".format(i+1, sorted_rs[i]["Name"], game_desc[j]["Data"][:100], sorted_rs[i]["Dot product"]))
+                print("{} - {}:{}... dp:{}".format(i+1, sorted_rs[i]["Name"], game_desc[j]["Data"][:50], sorted_rs[i]["Dot product"]))
 
     precision = sum(1 for x in sorted_rs[:10] if x["Dot product"] > 0)
     print(f"Precision @10: {precision}")
@@ -334,7 +337,6 @@ def test_engine():
 
 def main():
     test_engine()
-
     ''' --- TO DO ---
         - named entity recognition
         - metadata?

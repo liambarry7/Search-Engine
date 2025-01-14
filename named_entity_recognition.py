@@ -46,7 +46,6 @@ def inverse_document_frequency(term, vg_list):
     # df = no of docs term is in
     # vg list = dictionary of each game's tokens
 
-    # print("\n\n")
 
     # Basic df check
     document_frequency = 0
@@ -73,7 +72,6 @@ def inverse_document_frequency(term, vg_list):
 def tfidf(query, vg_list):
     query_terms = query.split(" ") # ------------ change to use tokeniser
     # query_terms = tokeniser(query) # ------------ change to use tokeniser
-    # print(query_terms)
 
 
     docs_tfidf = []
@@ -85,7 +83,6 @@ def tfidf(query, vg_list):
 
         for j in range(len(query_terms)):
             tfidf = term_frequency(query_terms[j], vg_list[i]["Tokens"], vg_list[i]["Entities"]) * inverse_document_frequency(query_terms[j], vg_list)
-            # print(tfidf)
 
             t = {"Term": query_terms[j], "tf-idf": tfidf}
             term_tfidf_list.append(t)

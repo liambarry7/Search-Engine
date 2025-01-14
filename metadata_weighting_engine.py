@@ -1,11 +1,5 @@
 import math
-import os
-import time
-
-import numpy
 import pandas
-import pandas as pd
-import spacy
 import regex
 
 from bs4 import BeautifulSoup, Comment
@@ -20,7 +14,6 @@ def csv_reader(game):
 
     for record in videogame_dict:
         if record['url'] == 'videogame/ps2.gamespy.com/' + game:
-            # print(record)
             return record
 
     # return videogame_dict
@@ -33,7 +26,6 @@ def get_metadata(game):
         values = ec.remove_punc(values)
         values = values.split(" ")
         return values
-        # print(values)
 
     except Exception as e:
         # capture errors such as path not existing in csv
@@ -65,7 +57,6 @@ def web_scraper(paths):
 
         # get metadata from csv
         #remove videogames/ from paths
-        # print(path)
         simple_path = path.replace('videogames/', '')
         metadata = get_metadata(csv_reader(simple_path))
 
@@ -105,8 +96,6 @@ def inverse_document_frequency(term, vg_list):
             if token == term:
                 document_frequency += 1
                 break  # Break inner loop as term already found once in doc
-        # else:
-        #     continue # Continue until term occurs or not found
 
     collection_size = len(vg_list)
 
