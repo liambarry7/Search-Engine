@@ -22,7 +22,8 @@ def instal_nltk_datasets():
     print("Initalising...")
     nltk.download('stopwords')
     nltk.download('wordnet')
-    nltk.download('punkt')
+    # nltk.download('punkt')
+    nltk.download('punkt_tab')
     time.sleep(3) # Ensures all ntlk downloads are up-to-date before system begins
 
 def get_query():
@@ -253,7 +254,7 @@ def cosine_similarity(dp_result_set, game_desc):
         for j in range(len(game_desc)):
             if sorted_rs[i]["Name"] == game_desc[j]["Name"]:
                 # print("{} - {}:{}... ".format(i+1, sorted_rs[i]["Name"], game_desc[j]["Data"][:100]))
-                print("{} - {}:{}... dp:{}".format(i+1, sorted_rs[i]["Name"], game_desc[j]["Data"][:50], sorted_rs[i]["Dot product"]))
+                print("{} - {}:... dp:{}".format(i+1, sorted_rs[i]["Name"], sorted_rs[i]["Dot product"]))
 
     precision = sum(1 for x in sorted_rs[:10] if x["Dot product"] > 0)
     print(f"Precision @10: {precision}")
